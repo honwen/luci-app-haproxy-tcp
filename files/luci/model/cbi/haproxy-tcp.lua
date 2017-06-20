@@ -17,7 +17,7 @@ o.placeholder = "0.0.0.0:6666"
 o.default     = "0.0.0.0:6666"
 o.rmempty     = false
 
-o = s:option(Value, "timeout", translate("Timeout Connect"))
+o = s:option(Value, "timeout", translate("Timeout Connect (ms)"))
 o.placeholder = "666"
 o.default     = "666"
 o.datatype    = "range(33, 10000)"
