@@ -1,0 +1,13 @@
+#!/bin/sh 
+
+uci -q batch <<-EOF >/dev/null
+	delete ucitrack.@haproxy-tcp[-1]
+	add ucitrack haproxy-tcp
+	set ucitrack.@haproxy-tcp[-1].init=haproxy-tcp
+	commit ucitrack
+EOF
+
+/etc/init.d/haproxy stop
+/etc/init.d/haproxy disable
+
+exit 0

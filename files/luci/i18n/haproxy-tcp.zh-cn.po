@@ -1,0 +1,20 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "HAProxy-TCP"
+msgstr "负载均衡-TCP"
+
+msgid "Enable"
+msgstr "启用"
+
+msgid "General Setting"
+msgstr "基本设置"
+
+msgid "Listen Address:Port"
+msgstr "服务地址"
+
+msgid "Timeout Connect"
+msgstr "连接超时"
+
+msgid "Retries"
+msgstr "重试次数"

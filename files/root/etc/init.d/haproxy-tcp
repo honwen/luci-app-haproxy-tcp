@@ -1,0 +1,45 @@
+#!/bin/sh /etc/rc.common
+START=75
+NAME=haproxy-tcp
+
+start() {
+	enable=$(uci -q get $NAME.general.enable)
+	[ "$enable" = 1 ] || return 0
+	listen=$(uci -q get $NAME.general.listen)
+	retries=$(uci -q get $NAME.general.retries)
+	timeout=$(uci -q get $NAME.general.timeout)
+	upstreams=$(uci -q get $NAME.general.upstreams)
+
+	mkdir -p /var/etc
+	cat <<-EOF > /var/etc/$NAME.cfg
+	global
+	    nbproc 2
+
+	defaults
+	    mode tcp
+	    retries ${retries:-2}
+	    timeout connect ${timeout:-1000}
+
+	frontend tcp-in
+	    bind ${listen:-0.0.0.0:6666}
+	    default_backend tcp-out
+
+	backend tcp-out
+		$(for upstream in $upstreams; do
+			echo $upstream | sed 's/^\(\([^\.]*\)\..*\)/    server\t\2\t\1/g'
+			done
+		)
+
+EOF
+
+	/usr/sbin/haproxy -q -D -f /var/etc/$NAME.cfg -p /var/run/$NAME.pid
+}
+
+kill_all() {
+	kill -9 $(pgrep -f $@) >/dev/null 2>&1
+}
+
+stop() {
+	kill_all "$NAME.pid"
+	rm -rf /var/etc/$NAME.cfg
+}
