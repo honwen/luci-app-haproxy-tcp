@@ -30,7 +30,7 @@ o.datatype    = "range(1, 10)"
 o.rmempty     = false
 
 
-o = s:option(DynamicList, "upstreams", translate("UpStream Server"))
+o = s:option(DynamicList, "upstreams", translate("UpStream Server"), translate("e.g. [8.8.8.8:53 weight 100]"))
 o.placeholder = "8.8.8.8:53"
 o.rmempty     = false
 

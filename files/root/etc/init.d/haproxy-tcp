@@ -25,9 +25,16 @@ start() {
 	    default_backend tcp-out
 
 	backend tcp-out
-		$(for upstream in $upstreams; do
-			echo $upstream | sed 's/^\(\([^\.]*\)\..*\)/    server\t\2\t\1/g'
-			done
+		$(	if [ 0 -lt $(grep -c weight /etc/config/$NAME) ]; then
+				echo "    balance static-rr"
+				sed -n 's/.*upstreams //p' /etc/config/$NAME |
+				sed 's/^\(\([^\.]*\)\..*\)/    server\t\2\t\1/g' |
+				tr -d "\'"
+			else
+				for upstream in $upstreams; do
+				echo $upstream | sed 's/^\(\([^\.]*\)\..*\)/    server\t\2\t\1/g'
+				done
+			fi
 		)
 
 EOF
