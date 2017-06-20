@@ -1,4 +1,4 @@
-OpenWrt LuCI for HAProxy-TCP (based on HAProxy)
+OpenWrt/LEDE LuCI for HAProxy-TCP
 ===
 
 简介
@@ -33,6 +33,10 @@ OpenWrt LuCI for HAProxy-TCP (based on HAProxy)
 ---
 
 软件包的正常使用需要依赖 `haproxy` .  
+
+预览
+---
+![preview](https://github.com/chenhw2/luci-app-haproxy-tcp/blob/master/preview.png)
 
 配置
 ---
