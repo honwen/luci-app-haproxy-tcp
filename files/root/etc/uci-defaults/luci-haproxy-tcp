@@ -10,4 +10,6 @@ EOF
 /etc/init.d/haproxy stop
 /etc/init.d/haproxy disable
 
+/etc/init.d/haproxy-tcp enable
+
 exit 0

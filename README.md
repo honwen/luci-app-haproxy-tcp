@@ -1,4 +1,4 @@
-OpenWrt LuCI for HAProxy-TCP (based on HAProxy)
+OpenWrt/LEDE LuCI for HAProxy-TCP
 ===
 
 简介
@@ -34,10 +34,14 @@ OpenWrt LuCI for HAProxy-TCP (based on HAProxy)
 
 软件包的正常使用需要依赖 `haproxy` .  
 
+预览
+---
+![preview](https://github.com/chenhw2/luci-app-haproxy-tcp/blob/master/preview.png)
+
 配置
 ---
 
-软件包的配置文件路径: `/etc/config/haproxy`  
+软件包的配置文件路径: `/etc/config/haproxy-tcp`  
 此文件为 UCI 配置文件, 配置方式可参考 [Wiki -> Use-UCI-system][Use-UCI-system] 和 [OpenWrt Wiki][uci]  
 
 编译

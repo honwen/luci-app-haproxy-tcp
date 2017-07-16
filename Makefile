@@ -7,7 +7,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-haproxy-tcp
-PKG_VERSION:=0.1.0
+PKG_VERSION:=0.1.4
 PKG_RELEASE:=1
 
 PKG_LICENSE:=MIT
@@ -54,7 +54,12 @@ fi
 exit 0
 endef
 
-define Package/luci-app-haproxy-tcp/postrm
+define Package/luci-app-haproxy-tcp/prerm
+#!/bin/sh
+/etc/init.d/haproxy-tcp disable
+/etc/init.d/haproxy-tcp stop
+rm -f /usr/sbin/haproxy-tcp
+exit 0
 endef
 
 define Package/luci-app-haproxy-tcp/conffiles
@@ -74,6 +79,8 @@ define Package/luci-app-haproxy-tcp/install
 	$(INSTALL_BIN) ./files/root/etc/init.d/haproxy-tcp $(1)/etc/init.d/haproxy-tcp
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
 	$(INSTALL_BIN) ./files/root/etc/uci-defaults/luci-haproxy-tcp $(1)/etc/uci-defaults/luci-haproxy-tcp
+	$(INSTALL_DIR) $(1)/usr/sbin
+	$(LN) haproxy $(1)/usr/sbin/haproxy-tcp
 endef
 
 $(eval $(call BuildPackage,luci-app-haproxy-tcp))
