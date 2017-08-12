@@ -24,7 +24,7 @@ define Package/luci-app-haproxy-tcp
 	SUBMENU:=3. Applications
 	TITLE:=LuCI Support for HAProxy-TCP
 	PKGARCH:=all
-	DEPENDS:=+haproxy
+	DEPENDS:=+haproxy-nossl
 endef
 
 define Package/luci-app-haproxy-tcp/description
