@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2016 chenhw2 <chenhw2@github.com>
+# Copyright (C) 2016-2021 chenhw2 <chenhw2@github.com>
 #
 # See /LICENSE for more information.
 #
@@ -7,7 +7,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-haproxy-tcp
-PKG_VERSION:=0.1.4
+PKG_VERSION:=0.2.0
 PKG_RELEASE:=1
 
 PKG_LICENSE:=MIT
@@ -73,6 +73,8 @@ define Package/luci-app-haproxy-tcp/install
 	$(INSTALL_DATA) ./files/luci/controller/*.lua $(1)/usr/lib/lua/luci/controller/
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/model/cbi
 	$(INSTALL_DATA) ./files/luci/model/cbi/*.lua $(1)/usr/lib/lua/luci/model/cbi/
+	$(INSTALL_DIR) $(1)/usr/share/rpcd/acl.d
+	$(INSTALL_DATA) ./files/root/usr/share/rpcd/acl.d/luci-app-haproxy-tcp.json $(1)/usr/share/rpcd/acl.d/
 	$(INSTALL_DIR) $(1)/etc/config
 	$(INSTALL_DATA) ./files/root/etc/config/haproxy-tcp $(1)/etc/config/haproxy-tcp
 	$(INSTALL_DIR) $(1)/etc/init.d

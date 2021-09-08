@@ -65,5 +65,5 @@ make package/feeds/luci-app-haproxy-tcp/compile V=s
 ```
 
  [openwrt-sdk]: https://wiki.openwrt.org/doc/howto/obtain.firmware.sdk
- [Use-UCI-system]: https://github.com/shadowsocks/luci-app-shadowsocks/wiki/Use-UCI-system
+ [Use-UCI-system]: https://github.com/shadowsocks/luci-app-haproxy-tcp/wiki/Use-UCI-system
  [uci]: https://wiki.openwrt.org/doc/uci
