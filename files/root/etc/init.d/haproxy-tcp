@@ -34,6 +34,8 @@ start() {
 	    mode tcp
 	    retries ${retries:-2}
 	    timeout connect ${timeout:-1000}
+	    timeout client ${timeout:-1000}
+	    timeout server ${timeout:-1000}
 
 	listen admin_stats
 	    bind 0.0.0.0:${admin_stats:-7777}
