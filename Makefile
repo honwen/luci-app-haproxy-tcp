@@ -1,6 +1,7 @@
 #
-# Copyright (C) 2016-2021 chenhw2 <chenhw2@github.com>
+# Copyright (C) 2016-2023 honwen https://github.com/honwen
 #
+# This is free software, licensed under the MIT License.
 # See /LICENSE for more information.
 #
 
@@ -12,37 +13,19 @@ PKG_RELEASE:=1
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
-PKG_MAINTAINER:=chenhw2 <chenhw2@github.com>
+PKG_MAINTAINER:=honwen <https://github.com/honwen>
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
+TITLE:=LuCI Support for HAProxy-TCP
+LUCI_DEPENDS:=+haproxy-nossl
+LUCI_PKGARCH:=all
 
-include $(INCLUDE_DIR)/package.mk
-
-define Package/luci-app-haproxy-tcp
-	SECTION:=luci
-	CATEGORY:=LuCI
-	SUBMENU:=3. Applications
-	TITLE:=LuCI Support for HAProxy-TCP
-	PKGARCH:=all
-	DEPENDS:=+haproxy-nossl
+define Package/$(PKG_NAME)/conffiles
+/etc/config/haproxy-tcp
 endef
 
-define Package/luci-app-haproxy-tcp/description
-	LuCI Support for HAProxy-TCP.
-endef
+include $(TOPDIR)/feeds/luci/luci.mk
 
-define Build/Prepare
-	$(foreach po,$(wildcard ${CURDIR}/files/luci/i18n/*.po), \
-		po2lmo $(po) $(PKG_BUILD_DIR)/$(patsubst %.po,%.lmo,$(notdir $(po)));)
-endef
-
-define Build/Configure
-endef
-
-define Build/Compile
-endef
-
-define Package/luci-app-haproxy-tcp/postinst
+define Package/$(PKG_NAME)/postinst
 #!/bin/sh
 if [ -z "$${IPKG_INSTROOT}" ]; then
 	if [ -f /etc/uci-defaults/luci-haproxy-tcp ]; then
@@ -54,35 +37,4 @@ fi
 exit 0
 endef
 
-define Package/luci-app-haproxy-tcp/prerm
-#!/bin/sh
-/etc/init.d/haproxy-tcp disable
-/etc/init.d/haproxy-tcp stop
-rm -f /usr/sbin/haproxy-tcp
-exit 0
-endef
-
-define Package/luci-app-haproxy-tcp/conffiles
-/etc/config/haproxy-tcp
-endef
-
-define Package/luci-app-haproxy-tcp/install
-	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/haproxy-tcp.*.lmo $(1)/usr/lib/lua/luci/i18n/
-	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/controller
-	$(INSTALL_DATA) ./files/luci/controller/*.lua $(1)/usr/lib/lua/luci/controller/
-	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/model/cbi
-	$(INSTALL_DATA) ./files/luci/model/cbi/*.lua $(1)/usr/lib/lua/luci/model/cbi/
-	$(INSTALL_DIR) $(1)/usr/share/rpcd/acl.d
-	$(INSTALL_DATA) ./files/root/usr/share/rpcd/acl.d/luci-app-haproxy-tcp.json $(1)/usr/share/rpcd/acl.d/
-	$(INSTALL_DIR) $(1)/etc/config
-	$(INSTALL_DATA) ./files/root/etc/config/haproxy-tcp $(1)/etc/config/haproxy-tcp
-	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) ./files/root/etc/init.d/haproxy-tcp $(1)/etc/init.d/haproxy-tcp
-	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(INSTALL_BIN) ./files/root/etc/uci-defaults/luci-haproxy-tcp $(1)/etc/uci-defaults/luci-haproxy-tcp
-	$(INSTALL_DIR) $(1)/usr/sbin
-	$(LN) haproxy $(1)/usr/sbin/haproxy-tcp
-endef
-
-$(eval $(call BuildPackage,luci-app-haproxy-tcp))
+# call BuildPackage - OpenWrt buildroot signature

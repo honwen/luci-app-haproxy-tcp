@@ -1,5 +1,5 @@
 
-config general 'general'
+config haproxy-tcp
 	option enable '0'
 	option retries '1'
 	option timeout '1000'
