@@ -1,10 +1,6 @@
 
 config haproxy-tcp
 	option enable '0'
-	option retries '1'
-	option timeout '1000'
-	option listen '0.0.0.0:6666'
-	option admin_stats '7777'
 	option startup_delay '5'
 	list upstreams '9.9.9.11:53'
 	list upstreams '9.9.9.11:9953'

@@ -36,10 +36,12 @@ service_triggers() {
 }
 
 genline_srv() {
-	line="$1"
-	hash="$(echo -n $line | md5sum | cut -c1-6)"
-	hash="$(echo -n $line | tr -d '\t ' | cut -c1-8)__$hash"
-	echo "    server $hash  $line" | tr -d "\'"
+	local line="$1"
+	local addr="$(echo -n $line | awk '{print $1}')"
+	local pedding_len=$((32 - $(echo $addr | wc -c) - 2))
+	[ $pedding_len -lt 1 ] && pedding_len=1
+	local uuid="$(echo -n $line | md5sum | cut -c1-$pedding_len)"
+	echo "    server ${uuid}__${addr}  $line" | tr -d "\'"
 }
 
 boot() {
@@ -50,44 +52,45 @@ boot() {
 
 start_service() {
 	uci_bool_by_type $NAME enable || exit 0
-	local listen=$(uci_get_by_type $NAME listen)
-	local admin_stats=$(uci_get_by_type $NAME admin_stats)
-	local retries=$(uci_get_by_type $NAME retries)
-	local timeout=$(uci_get_by_type $NAME timeout)
-	local upstreams=$(uci_get_by_type $NAME upstreams)
+	local listen=$(uci_get_by_type $NAME listen 0.0.0.0:6666)
+	local admin_stats=$(uci_get_by_type $NAME admin_stats 7777)
+	local retries=$(uci_get_by_type $NAME retries 1)
+	local timeout=$(uci_get_by_type $NAME timeout 999)
 
 	mkdir -p /var/etc
 	cat <<-EOF >/var/etc/$NAME.cfg
 		defaults
 		    mode tcp
 		    retries ${retries:-2}
-		    timeout connect ${timeout:-1000}
-		    timeout client ${timeout:-1000}
-		    timeout server ${timeout:-1000}
+		    timeout connect ${timeout}
+		    timeout client ${timeout}
+		    timeout server ${timeout}
 
 		listen admin_stats
-		    bind 0.0.0.0:${admin_stats:-7777}
+		    bind 0.0.0.0:${admin_stats}
 		    mode http
 		    stats uri /
 		    stats refresh 10s
 
 		frontend tcp-in
-		    bind ${listen:-0.0.0.0:6666}
+		    bind ${listen}
 		    default_backend tcp-out
 
 		backend tcp-out
-			$(
-			if [ 0 -lt $(grep -c weight /etc/config/$NAME) ]; then
-				echo "    balance static-rr"
-				sed -n 's/.*upstreams[\t ]*//p' /etc/config/$NAME |
-					while read upstream; do
-						genline_srv "$upstream"
-					done
-			else
-				for upstream in $upstreams; do
+		$(
+			uci_get_by_type $NAME upstreams | grep -q 'weight' && echo "    balance static-rr"
+
+			IFS=$'\n'
+			for upstream in $(uci_get_by_type $NAME upstreams | awk -F"'" '{print $1"\n"$2"\n"$3"\n"$4"\n"$5"\n"$6"\n"$7"\n"$8"\n"$9"\n"$10}' | sed '/^[ \t]*$/d'); do
+				if echo $upstream | grep -q 'weight'; then
 					genline_srv "$upstream"
-				done
-			fi
+				else
+					IFS=' '
+					for it in $upstream; do
+						genline_srv "$it"
+					done
+				fi
+			done
 		)
 
 	EOF
