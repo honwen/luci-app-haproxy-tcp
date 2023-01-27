@@ -11,9 +11,8 @@ end
 s = m:section(TypedSection, "haproxy-tcp", translate("General Setting"),
               "<a target=\"_blank\" href=\"http://%s:%s\">%s</a>" % {
     luci.sys.exec("uci get network.lan.ipaddr | tr -d '\r\n'"),
-    luci.sys
-        .exec("uci get haproxy-tcp.@haproxy-tcp[0].admin_stats | tr -d '\r\n'"),
-    translate("Status Admin")
+    luci.sys.exec("uci get haproxy-tcp.@haproxy-tcp[0].stats | tr -d '\r\n'"),
+    translate("Status")
 })
 s.anonymous = true
 
@@ -29,16 +28,16 @@ o.datatype = "uinteger"
 o.default = 0
 o.rmempty = false
 
-o = s:option(Value, "admin_stats",
-             "%s%s" % {translate("Status Admin"), translate("Port")})
-o.placeholder = "7777"
-o.default = "7777"
+o = s:option(Value, "stats",
+             "%s%s" % {translate("Status"), translate("Listen Address:Port")})
+o.placeholder = ":7777"
+o.default = ":7777"
 o.datatype = "port"
 o.rmempty = false
 
 o = s:option(Value, "listen", translate("Listen Address:Port"))
-o.placeholder = "0.0.0.0:6666"
-o.default = "0.0.0.0:6666"
+o.placeholder = ":6666"
+o.default = ":6666"
 o.rmempty = false
 
 o = s:option(Value, "timeout", translate("Timeout Connect (ms)"))

@@ -19,8 +19,8 @@ msgstr "服务地址"
 msgid "Retries"
 msgstr "重试次数"
 
-msgid "Status Admin"
-msgstr "状态管理"
+msgid "Status"
+msgstr "运行状态"
 
 msgid "Startup Delay"
 msgstr "自启动延时"

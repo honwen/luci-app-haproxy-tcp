@@ -41,7 +41,7 @@ genline_srv() {
 	local pedding_len=$((32 - $(echo $addr | wc -c) - 2))
 	[ $pedding_len -lt 1 ] && pedding_len=1
 	local uuid="$(echo -n $line | md5sum | cut -c1-$pedding_len)"
-	echo "    server ${uuid}__${addr}  $line" | tr -d "\'"
+	echo "    server ${uuid}__${addr}    $line" | tr -d "\'"
 }
 
 boot() {
@@ -52,8 +52,8 @@ boot() {
 
 start_service() {
 	uci_bool_by_type $NAME enable || exit 0
-	local listen=$(uci_get_by_type $NAME listen 0.0.0.0:6666)
-	local admin_stats=$(uci_get_by_type $NAME admin_stats 7777)
+	local listen=$(uci_get_by_type $NAME listen :6666)
+	local stats=$(uci_get_by_type $NAME stats :7777)
 	local retries=$(uci_get_by_type $NAME retries 1)
 	local timeout=$(uci_get_by_type $NAME timeout 999)
 
@@ -62,12 +62,12 @@ start_service() {
 		defaults
 		    mode tcp
 		    retries ${retries:-2}
-		    timeout connect ${timeout}
-		    timeout client ${timeout}
-		    timeout server ${timeout}
+		    timeout connect ${timeout}ms
+		    timeout client ${timeout}ms
+		    timeout server ${timeout}ms
 
-		listen admin_stats
-		    bind 0.0.0.0:${admin_stats}
+		listen stats
+		    bind ${stats}
 		    mode http
 		    stats uri /
 		    stats refresh 10s
@@ -77,11 +77,10 @@ start_service() {
 		    default_backend tcp-out
 
 		backend tcp-out
+		$(uci_get_by_type $NAME upstreams | grep -q 'weight' && echo "    balance static-rr")
 		$(
-			uci_get_by_type $NAME upstreams | grep -q 'weight' && echo "    balance static-rr"
-
 			IFS=$'\n'
-			for upstream in $(uci_get_by_type $NAME upstreams | awk -F"'" '{print $1"\n"$2"\n"$3"\n"$4"\n"$5"\n"$6"\n"$7"\n"$8"\n"$9"\n"$10}' | sed '/^[ \t]*$/d'); do
+			for upstream in $(uci_get_by_type $NAME upstreams | awk -F"'" -v OFS="\n" '{$1=$1}1' | sed '/^[ \t]*$/d'); do
 				if echo $upstream | grep -q 'weight'; then
 					genline_srv "$upstream"
 				else
