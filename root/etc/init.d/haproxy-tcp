@@ -94,6 +94,8 @@ start_service() {
 
 	EOF
 
+	[ ${timeout} -lt 0 ] && sed '/ timeout /d' -i /var/etc/$NAME.cfg
+
 	start_instance /usr/sbin/$NAME -q -f /var/etc/$NAME.cfg -p /var/run/$NAME.pid
 }
 
